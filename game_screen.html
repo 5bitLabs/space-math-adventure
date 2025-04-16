@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Space Math Adventure</title>
+  <link rel="stylesheet" href="game_screen.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="twinkling"></div>
+  
+  <div id="game-container">
+    <div class="game-header">
+      <h1>🚀 Space Math Adventure</h1>
+      <button id="close-btn" class="control-btn">✖️</button>
+      <div id="level-badge">
+        <div class="badge-icon">🧠</div>
+        <div class="badge-text">
+          <div id="level-number">Level 1</div>
+          <div id="level-title">Moon Walker</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="rocket-progress">
+      <div id="rocket">🚀</div>
+      <div id="progress-track">
+        
+      </div>
+    </div>
+
+    <div id="question-container">
+      <div class="question-character">
+        <div class="alien" id="question-alien">👨‍🚀</div>
+        <div class="speech-bubble">
+          <div id="question">Loading...</div>
+        </div>
+      </div>
+      <div id="planets-container">
+        <div id="planets" class="planet-orbit"></div>
+      </div>
+    </div>
+
+    <div id="status-panel">
+      <div class="status-item">
+        <div class="status-icon">⭐</div>
+        <div class="status-label">Score:</div>
+        <div class="status-value" id="score">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">♥️</div>
+        <div class="status-label">Lives:</div>
+        <div class="status-value" id="lives">3</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">⏱️</div>
+        <div class="status-label">Time:</div>
+        <div id="timer-bar"><div id="timer-fill"></div></div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">🏆</div>
+        <div class="status-label">Streak:</div>
+        <div class="status-value" id="streak">0</div>
+      </div>
+    </div>
+
+    <div id="power-ups">
+      <button id="time-boost" class="power-up" title="Add 5 seconds">
+        <span class="power-icon">⏱️</span>
+        <span class="power-text">+5s</span>
+      </button>
+      <button id="question-skip" class="power-up" title="Skip question">⏭️</button>
+      <button id="fifty-fifty" class="power-up" title="Remove wrong answers">🎯</button>
+    </div>
+  </div>
+
+  <div id="level-up" class="modal hidden">
+    <div class="modal-content">
+      <h2>Level Up! 🎉</h2>
+      <div class="level-up-details">
+        <p>You've reached <span id="new-level-name">Moon Walker</span>!</p>
+        <div class="level-badge" id="level-up-badge">2</div>
+      </div>
+      <p>Current Score: <span id="level-up-score">0</span></p>
+      <button id="continue-btn" class="glow-button">Continue Adventure</button>
+    </div>
+  </div>
+
+  <div id="game-over" class="modal hidden">
+    <div class="modal-content">
+      <h2>Mission Complete!</h2>
+      <div class="result-character"></div>
+      <p>Your Final Score: <span id="final-score"></span></p>
+      <p>Highest Level: <span id="final-level"></span></p>
+      <div id="achievements">
+        <div class="achievement">🏅 Math Explorer</div>
+      </div>
+      <button id="restart-btn" class="glow-button">New Mission</button>
+    </div>
+  </div>
+
+  <div id="pause-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Game Paused</h2>
+      <button id="resume-btn" class="btn">Resume Game</button>
+      <button id="exit-to-menu-btn" class="btn">Exit to Menu</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+        <p>Copyright &copy; 2025 <span class="company-name">5bitLabs™</span>. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:fivebitlabs@gmail.com">fivebitlabs@gmail.com</a></p>
+    </div>
+  </footer>
+  
+  <audio id="correct-sound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+  <audio id="wrong-sound" src="https://www.fesliyanstudios.com/play-mp3/399" preload="auto"></audio>
+  <audio id="level-up-sound" src="https://www.fesliyanstudios.com/play-mp3/6728" preload="auto"></audio>
+  <audio id="background-music" src="https://www.fesliyanstudios.com/play-mp3/6650" preload="auto" loop></audio>
+  
+  <script src="game_screen.js"></script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>🚀 Space Math Adventure</title>
+  <link rel="stylesheet" href="game_screen.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;500&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="twinkling"></div>
+  
+  <div id="game-container">
+    <div class="game-header">
+      <h1>🚀 Space Math Adventure</h1>
+      <button id="close-btn" class="control-btn">✖️</button>
+      <div id="level-badge">
+        <div class="badge-icon">🧠</div>
+        <div class="badge-text">
+          <div id="level-number">Level 1</div>
+          <div id="level-title">Moon Walker</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="rocket-progress">
+      <div id="rocket">🚀</div>
+      <div id="progress-track">
+      </div>
+    </div>
+
+    <div id="question-container">
+      <div class="question-character">
+        <div class="alien" id="question-alien">👨‍🚀</div>
+        <div class="speech-bubble">
+          <div id="question">Loading...</div>
+        </div>
+      </div>
+      <div id="planets-container">
+        <div id="planets" class="planet-orbit"></div>
+      </div>
+    </div>
+
+    <div id="status-panel">
+      <div class="status-item">
+        <div class="status-icon">⭐</div>
+        <div class="status-label">Score:</div>
+        <div class="status-value" id="score">0</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">♥️</div>
+        <div class="status-label">Lives:</div>
+        <div class="status-value" id="lives">3</div>
+      </div>
+      <div class="status-item timer-container">
+        <div class="status-icon">⏱️</div>
+        <div class="status-label">Time:</div>
+        <div id="timer-bar"><div id="timer-fill"></div></div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">🏆</div>
+        <div class="status-label">Streak:</div>
+        <div class="status-value" id="streak">0</div>
+      </div>
+    </div>
+
+    <div id="power-ups">
+      <button id="time-boost" class="power-up" title="Add 5 seconds">
+        <span class="power-icon">⏱️</span>
+        <span class="power-text">+5s</span>
+      </button>
+      <button id="question-skip" class="power-up" title="Skip question">
+        <span class="power-icon">⏭️</span>
+        <span class="power-text">Skip</span>
+      </button>
+      <button id="fifty-fifty" class="power-up" title="Remove wrong answers">
+        <span class="power-icon">🎯</span>
+        <span class="power-text">50/50</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="level-up" class="modal hidden">
+    <div class="modal-content">
+      <h2>Level Up! 🎉</h2>
+      <div class="level-up-details">
+        <p>You've reached <span id="new-level-name">Moon Walker</span>!</p>
+        <div class="level-badge" id="level-up-badge">2</div>
+      </div>
+      <p>Current Score: <span id="level-up-score">0</span></p>
+      <button id="continue-btn" class="glow-button">Continue Adventure</button>
+    </div>
+  </div>
+
+  <div id="game-over" class="modal hidden">
+    <div class="modal-content">
+      <h2>Mission Complete!</h2>
+      <div class="result-character"></div>
+      <p>Your Final Score: <span id="final-score"></span></p>
+      <p>Highest Level: <span id="final-level"></span></p>
+      <div id="achievements">
+        <div class="achievement">🏅 Math Explorer</div>
+      </div>
+      <button id="restart-btn" class="glow-button">New Mission</button>
+    </div>
+  </div>
+
+  <div id="pause-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Game Paused</h2>
+      <button id="resume-btn" class="btn">Resume Game</button>
+      <button id="exit-to-menu-btn" class="btn">Exit to Menu</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+        <p>Copyright &copy; 2025 <span class="company-name">5bitLabs™</span>. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:fivebitlabs@gmail.com">fivebitlabs@gmail.com</a></p>
+    </div>
+  </footer>
+  
+  <audio id="correct-sound" src="https://www.fesliyanstudios.com/play-mp3/387" preload="auto"></audio>
+  <audio id="wrong-sound" src="https://www.fesliyanstudios.com/play-mp3/399" preload="auto"></audio>
+  <audio id="level-up-sound" src="https://www.fesliyanstudios.com/play-mp3/6728" preload="auto"></audio>
+  <audio id="background-music" src="https://www.fesliyanstudios.com/play-mp3/6650" preload="auto" loop></audio>
+  
+  <script src="game_screen.js"></script>
+</body>
+</html> -->
