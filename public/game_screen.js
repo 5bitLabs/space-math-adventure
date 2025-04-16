@@ -277,7 +277,7 @@ const config = {
     backgroundMusic.currentTime = 0;
     
     // Redirect to splash screen
-    window.location.href = 'splash_screen.html';
+    window.location.href = 'index.html';
   }
   
   // Load a new question
