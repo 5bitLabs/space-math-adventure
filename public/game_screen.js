@@ -313,99 +313,239 @@ const config = {
   }
   
   // Generate a question based on current level and difficulty
-  function generateQuestion() {
-    const diffSettings = config[gameState.difficulty];
-    let max = Math.min(diffSettings.maxNumber + (gameState.level * 5), 100);
+  // function generateQuestion() {
+// Generate a question based on current level and difficulty
+function generateQuestion() {
+  const diffSettings = config[gameState.difficulty];
+  let max = Math.min(diffSettings.maxNumber + (gameState.level * 5), 100);
+  
+  // Determine operation selection based on difficulty
+  let availableOps = diffSettings.operations;
+  let op;
+  
+  if (gameState.difficulty === 'hard') {
+    // In hard mode, directly control operation distribution
+    const levelFactor = Math.min(gameState.level, 6);
     
-    // Select operation based on level and difficulty
-    const availableOps = diffSettings.operations;
-    const op = availableOps[Math.floor(Math.random() * availableOps.length)];
+    // Create weighted distribution that changes with level
+    let opWeights = [];
     
-    let a, b, correct, questionStr;
+    // Basic operations (always present but decreasing probability with level)
+    opWeights.push(
+      ...Array(Math.max(7 - levelFactor, 1)).fill('+'),
+      ...Array(Math.max(7 - levelFactor, 1)).fill('-')
+    );
     
-    // Generate numbers based on operation to ensure age-appropriate difficulty
-    switch (op) {
-      case '+':
+    // Intermediate operations (constant presence)
+    opWeights.push(
+      ...Array(3).fill('*'),
+      ...Array(3).fill('/')
+    );
+    
+    // Advanced operations (increasing with level)
+    opWeights.push(
+      ...Array(levelFactor).fill('%'),
+      ...Array(levelFactor).fill('^')
+    );
+    
+    // Select from weighted distribution
+    op = opWeights[Math.floor(Math.random() * opWeights.length)];
+  } else {
+    // Normal selection for easy/medium
+    op = availableOps[Math.floor(Math.random() * availableOps.length)];
+  }
+  
+  let a, b, c, correct, questionStr;
+  
+  // Generate numbers based on operation to ensure appropriate difficulty
+  switch (op) {
+    case '+':
+      if (gameState.difficulty === 'hard') {
+        // For hard mode, sometimes use multi-addend problems
+        if (gameState.level > 2 && Math.random() < 0.4) {
+          a = Math.floor(Math.random() * max) + 5;
+          b = Math.floor(Math.random() * max) + 5;
+          c = Math.floor(Math.random() * max) + 5;
+          correct = a + b + c;
+          questionStr = `${a} + ${b} + ${c} = ?`;
+        } else {
+          a = Math.floor(Math.random() * max) + 10;
+          b = Math.floor(Math.random() * max) + 10;
+          correct = a + b;
+          questionStr = `${a} + ${b} = ?`;
+        }
+      } else {
         a = Math.floor(Math.random() * max) + 1;
         b = Math.floor(Math.random() * max) + 1;
         correct = a + b;
         questionStr = `${a} + ${b} = ?`;
-        break;
-        
-      case '-':
-        a = Math.floor(Math.random() * max) + 10; // Ensure a is reasonably large
-        b = Math.floor(Math.random() * a) + 1; // Ensure b <= a for subtraction
+      }
+      break;
+      
+    case '-':
+      if (gameState.difficulty === 'hard' && gameState.level > 3) {
+        // For higher levels, sometimes use negative results
+        a = Math.floor(Math.random() * max) + 10;
+        b = Math.floor(Math.random() * (max + 20)) + a - 10; // Sometimes b > a
         correct = a - b;
         questionStr = `${a} - ${b} = ?`;
-        break;
-        
-      case '*':
-        a = Math.floor(Math.random() * Math.min(15, max)) + 2; // Increased multiplication range
+      } else {
+        a = Math.floor(Math.random() * max) + 10;
+        b = Math.floor(Math.random() * a) + 1; // Ensure b <= a
+        correct = a - b;
+        questionStr = `${a} - ${b} = ?`;
+      }
+      break;
+      
+    case '*':
+      if (gameState.difficulty === 'hard') {
+        // Harder multiplication problems
+        a = Math.floor(Math.random() * 20) + 5;
+        b = Math.floor(Math.random() * 20) + 5;
+      } else {
+        a = Math.floor(Math.random() * Math.min(15, max)) + 2;
         b = Math.floor(Math.random() * Math.min(15, max)) + 2;
-        correct = a * b;
-        questionStr = `${a} × ${b} = ?`;
-        break;
-        
-      case '/':
-        // Create division problems with whole number answers
+      }
+      correct = a * b;
+      questionStr = `${a} × ${b} = ?`;
+      break;
+      
+    case '/':
+      if (gameState.difficulty === 'hard' && gameState.level > 2) {
+        // For hard mode at higher levels, include some decimal results
+        if (Math.random() < 0.4) {
+          b = [2, 4, 5, 10][Math.floor(Math.random() * 4)]; // Common divisors
+          a = b * Math.floor(Math.random() * 10) + Math.floor(Math.random() * b);
+          correct = parseFloat((a / b).toFixed(1)); // Round to 1 decimal
+          questionStr = `${a} ÷ ${b} = ?`;
+        } else {
+          // Integer division but with larger numbers
+          b = Math.floor(Math.random() * 15) + 2; // Divisor between 2-16
+          correct = Math.floor(Math.random() * 12) + 1; // Quotient between 1-12
+          a = b * correct;
+          questionStr = `${a} ÷ ${b} = ?`;
+        }
+      } else {
         b = Math.floor(Math.random() * 10) + 2; // Divisor between 2-11
         correct = Math.floor(Math.random() * 10) + 1; // Quotient between 1-10
-        a = b * correct; // Calculate dividend to ensure whole number answer
+        a = b * correct;
         questionStr = `${a} ÷ ${b} = ?`;
-        break;
-        
-      case '%':
-        // Create percentage problems
-        b = [5, 10, 20, 25, 50][Math.floor(Math.random() * 5)]; // Common percentages
-        a = Math.floor(Math.random() * 100) + 20; // Number between 20-119
-        correct = Math.round((a * b) / 100); // Calculate percentage
+      }
+      break;
+      
+    case '%':
+      if (gameState.difficulty === 'hard') {
+        // More challenging percentage problems
+        if (gameState.level > 3) {
+          // Include less common percentages
+          b = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75][Math.floor(Math.random() * 10)];
+        } else {
+          b = [5, 10, 20, 25, 50][Math.floor(Math.random() * 5)]; // Common percentages
+        }
+        a = Math.floor(Math.random() * 200) + 20; // Larger numbers for percentages
+        correct = Math.round((a * b) / 100);
         questionStr = `${b}% of ${a} = ?`;
-        break;
-        
-      case '^':
-        // Create power problems (exponents)
-        a = Math.floor(Math.random() * 10) + 2; // Base between 2-11
-        b = Math.floor(Math.random() * 3) + 2; // Exponent between 2-4
+      } else {
+        b = [10, 25, 50][Math.floor(Math.random() * 3)]; // Simple percentages
+        a = Math.floor(Math.random() * 100) + 20; // Number between 20-119
+        correct = Math.round((a * b) / 100);
+        questionStr = `${b}% of ${a} = ?`;
+      }
+      break;
+      
+    case '^':
+      if (gameState.difficulty === 'hard') {
+        if (gameState.level >= 4) {
+          // More complex exponentiation
+          if (Math.random() < 0.3 && gameState.level > 4) {
+            // Sometimes use non-integer exponents for very high levels
+            a = [2, 3, 4][Math.floor(Math.random() * 3)];
+            b = 0.5; // Square root!
+            correct = Math.sqrt(a);
+            questionStr = `${a}<sup>½</sup> = ?`;
+          } else {
+            // Higher bases and exponents
+            a = Math.floor(Math.random() * 8) + 2; // Base between 2-9
+            b = Math.floor(Math.random() * 3) + 2; // Exponent between 2-4
+            correct = Math.pow(a, b);
+            questionStr = `${a}<sup>${b}</sup> = ?`;
+          }
+        } else {
+          // Simpler exponentiation for early levels
+          a = Math.floor(Math.random() * 6) + 2; // Base between 2-7
+          b = 2; // Square
+          correct = Math.pow(a, b);
+          questionStr = `${a}<sup>${b}</sup> = ?`;
+        }
+      } else {
+        a = Math.floor(Math.random() * 5) + 2; // Base between 2-6
+        b = 2; // Exponent is 2 (squared)
         correct = Math.pow(a, b);
         questionStr = `${a}<sup>${b}</sup> = ?`;
-        break;
-    }
+      }
+      break;
+  }
+  
+  // If we have a decimal result, ensure choices are formatted the same way
+  if (String(correct).includes('.')) {
+    correct = parseFloat(correct.toFixed(1));
+  }
+  
+  // Generate choices including the correct answer
+  let choices = [correct];
+  
+  // Generate 3 incorrect but reasonable choices
+  while (choices.length < 4) {
+    // Create a wrong answer that's close to the correct one
+    let offset, wrong;
     
-    // Generate choices including the correct answer
-    let choices = [correct];
-    
-    // Generate 3 incorrect but reasonable choices
-    while (choices.length < 4) {
-      // Create a wrong answer that's close to the correct one
-      let offset;
-      
+    if (gameState.difficulty === 'hard') {
+      // More subtle differences in hard mode
       if (op === '%' || op === '/') {
         // For percentage and division, use smaller offsets
-        offset = Math.floor(Math.random() * 6) - 3;
+        offset = Math.floor(Math.random() * 4) - 2;
+        if (offset === 0) offset = (Math.random() < 0.5) ? 1 : -1;
       } else if (op === '^' && correct > 50) {
         // For large power results, use percentage-based offsets
+        const percentOffset = Math.floor(Math.random() * 20) - 10;
+        offset = Math.floor(correct * percentOffset / 100);
+        if (offset === 0) offset = (Math.random() < 0.5) ? 1 : -1;
+      } else {
+        // For other operations - closer to correct answer in hard mode
+        offset = Math.floor(Math.random() * (Math.min(8, Math.max(3, Math.floor(correct * 0.15))))) * (Math.random() < 0.5 ? 1 : -1);
+        if (offset === 0) offset = (Math.random() < 0.5) ? 1 : -1;
+      }
+    } else {
+      // Standard offsets for easy/medium
+      if (op === '%' || op === '/') {
+        offset = Math.floor(Math.random() * 6) - 3;
+      } else if (op === '^' && correct > 50) {
         const percentOffset = Math.floor(Math.random() * 30) - 15;
         offset = Math.floor(correct * percentOffset / 100);
       } else {
-        // For other operations
         offset = Math.floor(Math.random() * (Math.min(10, Math.max(5, Math.floor(correct * 0.2))))) * (Math.random() < 0.5 ? 1 : -1);
       }
-      
-      // Ensure offset isn't 0 (would be correct answer)
       if (offset === 0) offset = Math.random() < 0.5 ? 1 : -1;
-      
-      let wrong = correct + offset;
-      // Ensure answer is positive and not already in choices
-      if (wrong > 0 && !choices.includes(wrong)) {
-        choices.push(wrong);
-      }
     }
     
-    // Shuffle choices
-    choices.sort(() => Math.random() - 0.5);
+    wrong = correct + offset;
     
-    return { question: questionStr, correct, choices };
+    // For decimal results, ensure wrong answers are also formatted appropriately
+    if (String(correct).includes('.')) {
+      wrong = parseFloat(wrong.toFixed(1));
+    }
+    
+    // Ensure answer is not already in choices
+    if (wrong !== correct && !choices.includes(wrong)) {
+      choices.push(wrong);
+    }
   }
+  
+  // Shuffle choices
+  choices.sort(() => Math.random() - 0.5);
+  
+  return { question: questionStr, correct, choices };
+}
   
   // Get level name based on current level
   function getLevelName() {
